@@ -1,0 +1,41 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build Docker image
+      run: docker build -t devops-app:${{ github.sha }} .
+
+    - name: Push Docker image to AWS ECR
+      run: |
+        $(aws ecr get-login --no-include-email --region us-east-1)
+        docker tag devops-app:${{ github.sha }} 724772086697.dkr.ecr.us-east-1.amazonaws.com/devops-app/devops-app:${{ github.sha }}
+        docker push <AWS_ECR_URI>/devops-app:${{ github.sha }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup Helm
+      run: |
+        helm upgrade --install devops-app ./helm-chart --set image.tag=${{ github.sha }}
+

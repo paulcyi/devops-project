@@ -57,10 +57,25 @@ jobs:
       run: |
         aws eks update-kubeconfig --region ${{ secrets.AWS_DEFAULT_REGION }} --name devops-cluster
 
+    # Step 4: Print working directory to verify where the action is running
+    - name: Print working directory
+      run: pwd
+
+    # Step 5: List all files and directories to verify helm-chart exists
+    - name: List files in the workspace
+      run: ls -R
+
+    # Step 6: Check if Helm is installed correctly
+    - name: Check Helm installation
+      run: helm version
+
+    # Install Helm (if needed)
     - name: Install Helm
       run: |
         curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
+    # Helm deployment
     - name: Helm upgrade and install
       run: |
         helm upgrade --install devops-app ./helm-chart --set image.tag=${{ github.sha }}
+

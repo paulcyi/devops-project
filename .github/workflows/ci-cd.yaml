@@ -35,9 +35,12 @@ jobs:
       run: docker build -t devops-app:${{ github.sha }} .
 
     - name: Tag and Push Docker image to AWS ECR
-      run: |
-        docker tag devops-app:${{ github.sha }} $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/devops-app:${{ github.sha }}
-        docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/devops-app:${{ github.sha }}
+      env:
+	AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+     run:
+       docker tag devops-app:${{ github.sha }} $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/devops-app:${{ github.sha }}
+       docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/devops-app:${{ github.sha }}
 
   deploy:
     needs: build

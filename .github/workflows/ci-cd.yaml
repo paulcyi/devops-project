@@ -1,81 +1,35 @@
-name: CI/CD Pipeline
+deploy:
+  needs: build
+  runs-on: ubuntu-latest
 
-on:
-  push:
-    branches:
-      - main
+  steps:
+  - name: Configure AWS credentials
+    uses: aws-actions/configure-aws-credentials@v1
+    with:
+      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+  - name: Update kubeconfig for EKS
+    run: |
+      aws eks update-kubeconfig --region ${{ secrets.AWS_DEFAULT_REGION }} --name devops-cluster
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+  # Debug: List all files to confirm helm-chart is present
+  - name: List all files in the workspace
+    run: ls -R
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
+  # Debug: Check Helm installation
+  - name: Check Helm installation
+    run: helm version
 
-    - name: Install dependencies
-      run: npm install
+  # Install Helm (if needed)
+  - name: Install Helm
+    run: |
+      curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-    - name: Authenticate to AWS ECR
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-        AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      run: |
-        aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+  # Helm deployment
+  - name: Helm upgrade and install
+    run: |
+      helm upgrade --install devops-app ./helm-chart --set image.tag=${{ github.sha }}
 
-    - name: Build Docker image
-      run: docker build -t devops-app:${{ github.sha }} .
-
-    - name: Tag and Push Docker image to AWS ECR
-      env:
-        AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      run: |
-        docker tag devops-app:${{ github.sha }} $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/devops-app:${{ github.sha }}
-        docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/devops-app:${{ github.sha }}
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-
-    - name: Update kubeconfig for EKS
-      run: |
-        aws eks update-kubeconfig --region ${{ secrets.AWS_DEFAULT_REGION }} --name devops-cluster
-
-    # Step 4: Print working directory to verify where the action is running
-    - name: Print working directory
-      run: pwd
-
-    # Step 5: List all files and directories to verify helm-chart exists
-    - name: List files in the workspace
-      run: ls -R
-
-    # Step 6: Check if Helm is installed correctly
-    - name: Check Helm installation
-      run: helm version
-
-    # Install Helm (if needed)
-    - name: Install Helm
-      run: |
-        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-
-    # Helm deployment
-    - name: Helm upgrade and install
-      run: |
-        helm upgrade --install devops-app ./helm-chart --set image.tag=${{ github.sha }}
 

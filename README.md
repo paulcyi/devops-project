@@ -57,8 +57,8 @@ graph TD;
 
 ---
 
-### Screenshots and Metrics (Optional)
-If you’d like to show screenshots of your CI/CD workflow, Kubernetes dashboard, or Prometheus/Grafana metrics, add those here.
+### Screenshots and Metrics
+
 <img width="1677" alt="Screenshot 2024-09-20 at 22 36 15" src="https://github.com/user-attachments/assets/60d6778c-0944-49e2-bd9d-de13ae4d61bd">
 <img width="1677" alt="Screenshot 2024-09-21 at 00 31 20" src="https://github.com/user-attachments/assets/7ab49384-2a3d-4e9c-a651-f26af7ce45e0">
 <img width="1677" alt="Screenshot 2024-09-21 at 00 02 56" src="https://github.com/user-attachments/assets/6d411cd8-717a-49c0-8f50-88564cc21b33">

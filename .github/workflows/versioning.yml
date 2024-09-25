@@ -9,6 +9,10 @@ jobs:
   version:
     runs-on: ubuntu-latest
     
+    permissions:
+      contents: write
+      packages: write
+      
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -24,5 +28,3 @@ jobs:
       - name: Push Changes and Tags
         run: |
           git push origin main --tags
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

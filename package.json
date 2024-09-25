@@ -1,6 +1,6 @@
 {
   "name": "devops-project",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "## Overview This project demonstrates my hands-on learning experience with setting up a CI/CD pipeline using modern DevOps tools. The goal was to containerize a simple \"Hello World\" file, deploy it using Kubernetes (EKS), and integrate continuous deployment using GitHub Actions.",
   "main": "app.js",
   "scripts": {

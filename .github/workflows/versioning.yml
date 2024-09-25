@@ -1,4 +1,4 @@
-name: Version Bump
+name: Versioning
 
 on:
   push:
@@ -6,34 +6,21 @@ on:
       - main
 
 jobs:
-  bump-version:
+  version:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14' # Adjust to your Node.js version
-
-      - name: Install Dependencies
-        run: npm install # Adjust if using a different package manager
-
-      - name: Bump Version
-        run: |
-          npm version patch -m "Bump version to %s" # Increment version; change to 'minor' or 'major' if needed
-          git push origin main --tags # Push changes and tags back to the repo
-
-      - name: Commit Version Change
+      - name: Configure Git User
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          git add package.json package-lock.json # Adjust if using different files
-          git commit -m "Bump version to $(node -p "require('./package.json').version")"
-            
-      - name: Tag Version
+
+      - name: Bump Version
+        run: npm version patch -m "Bump version to %s" # Increment version; change to 'minor' or 'major' if needed
+
+      - name: Push Changes and Tags
         run: |
-          git tag -a "v$(node -p "require('./package.json').version")" -m "Release version $(node -p "require('./package.json').version")"
-          git push origin --tags
+          git push origin main --tags

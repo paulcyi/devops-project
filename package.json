@@ -1,0 +1,19 @@
+{
+  "name": "devops-project",
+  "version": "1.0.0",
+  "description": "## Overview This project demonstrates my hands-on learning experience with setting up a CI/CD pipeline using modern DevOps tools. The goal was to containerize a simple \"Hello World\" file, deploy it using Kubernetes (EKS), and integrate continuous deployment using GitHub Actions.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paulcyi/devops-project.git"
+  },
+  "author": "Paul Yi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paulcyi/devops-project/issues"
+  },
+  "homepage": "https://github.com/paulcyi/devops-project#readme"
+}

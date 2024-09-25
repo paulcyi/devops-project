@@ -32,4 +32,8 @@ jobs:
           git config --global user.email "action@github.com"
           git add package.json package-lock.json # Adjust if using different files
           git commit -m "Bump version to $(node -p "require('./package.json').version")"
-          git push
+            
+      - name: Tag Version
+        run: |
+          git tag -a "v$(node -p "require('./package.json').version")" -m "Release version $(node -p "require('./package.json').version")"
+          git push origin --tags
